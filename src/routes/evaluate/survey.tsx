@@ -189,7 +189,7 @@ function SurveyPage() {
 	if (currentIndex >= vignettes.length) {
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
-				<div className="max-w-2xl bg-white rounded-lg shadow-md p-8 text-center">
+				<div className="max-w-2xl bg-white rounded-lg shadow-md p-2 text-center">
 					<h1 className="text-3xl font-bold mb-4 text-green-600">
 						Evaluasi Selesai!
 					</h1>
@@ -234,7 +234,7 @@ function SurveyPage() {
 				</div>
 
 				{/* Current Vignette */}
-				<div className="bg-white rounded-lg shadow-md p-8 mb-6">
+				<div className="bg-white rounded-lg shadow-md p-2 mb-6">
 					<div className="flex justify-between items-start mb-6">
 						<h2 className="text-2xl font-bold">
 							Kasus {currentIndex + 1} dari {vignettes.length}
@@ -280,18 +280,20 @@ function SurveyPage() {
 											<span className="font-semibold mr-2">{idx + 1}.</span>
 											<div>
 												<div className="font-medium">{d.diagnosis}</div>
-												<div className="rounded text-sm text-gray-700 flex md:flex-row flex-col gap-2 border border-sky-200 p-2 mb-2">
-													<div className="font-medium w-full md:w-1/3">
-														Rationale:
+												<div className="flex grid md:grid-cols-2 gap-2 grid-rows auto-rows-fr">
+													<div className="rounded text-sm text-gray-700 flex md:flex-row flex-col gap-2 border border-sky-200 p-2">
+														<div className="font-medium w-full md:w-1/3">
+															Rasionalitas:
+														</div>
+														<div className="w-full md:w-2/3">{d.rationale}</div>
 													</div>
-													<div className="w-full md:w-2/3">{d.rationale}</div>
-												</div>
-												<div className="rounded text-sm text-gray-700 flex md:flex-row flex-col gap-2 border border-sky-200 p-2">
-													<div className="font-medium w-full md:w-1/3">
-														Pertimbangan Regional:
-													</div>
-													<div className="w-full md:w-2/3">
-														{d.regionalConsiderations}
+													<div className="rounded text-sm text-gray-700 flex md:flex-row flex-col gap-2 border border-sky-200 p-2">
+														<div className="font-medium w-full md:w-1/3">
+															Pertimbangan Regional:
+														</div>
+														<div className="w-full md:w-2/3">
+															{d.regionalConsiderations}
+														</div>
 													</div>
 												</div>
 											</div>
@@ -322,7 +324,7 @@ function SurveyPage() {
 
 				{/* Evaluation Form */}
 				{!isCompleted && current.llmOutput && (
-					<div className="bg-white rounded-lg shadow-md p-8 mb-6">
+					<div className="bg-white rounded-lg shadow-md p-2 mb-6">
 						<h3 className="text-xl font-bold mb-6">Pertanyaan Evaluasi</h3>
 						<div className="space-y-3">
 							{/* Question 1: Relevance */}
@@ -330,11 +332,11 @@ function SurveyPage() {
 								<label className="block font-medium mb-3">
 									1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?
 								</label>
-								<div className="flex space-x-4">
+								<div className="flex flex-wrap gap-3">
 									{[1, 2, 3, 4, 5].map((score) => (
 										<label
 											key={score}
-											className="flex items-center space-x-2 cursor-pointer"
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
 										>
 											<input
 												type="radio"
@@ -344,9 +346,9 @@ function SurveyPage() {
 												onChange={() =>
 													setFormData({ ...formData, relevance_score: score })
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>{score}</span>
+											<span className="text-base">{score}</span>
 										</label>
 									))}
 								</div>
@@ -361,8 +363,8 @@ function SurveyPage() {
 									2. Apakah ada diagnosis kritis yang terlewat?
 								</label>
 								<div className="space-y-2">
-									<div className="flex space-x-6">
-										<label className="flex items-center space-x-2 cursor-pointer">
+									<div className="flex flex-wrap gap-3">
+										<label className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors">
 											<input
 												type="radio"
 												name="missing_critical"
@@ -374,11 +376,11 @@ function SurveyPage() {
 														missing_diagnosis: "",
 													})
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>Tidak</span>
+											<span className="text-base">Tidak</span>
 										</label>
-										<label className="flex items-center space-x-2 cursor-pointer">
+										<label className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors">
 											<input
 												type="radio"
 												name="missing_critical"
@@ -386,9 +388,9 @@ function SurveyPage() {
 												onChange={() =>
 													setFormData({ ...formData, missing_critical: true })
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>Ya</span>
+											<span className="text-base">Ya</span>
 										</label>
 									</div>
 									{formData.missing_critical && (
@@ -418,11 +420,11 @@ function SurveyPage() {
 									3. Pada skala 1-5, seberapa mungkin penggunaan diferensial diagnosis ini
 									menyebabkan bahaya langsung pada pasien?
 								</label>
-								<div className="flex space-x-4">
+								<div className="flex flex-wrap gap-3">
 									{[1, 2, 3, 4, 5].map((score) => (
 										<label
 											key={score}
-											className="flex items-center space-x-2 cursor-pointer"
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
 										>
 											<input
 												type="radio"
@@ -432,9 +434,9 @@ function SurveyPage() {
 												onChange={() =>
 													setFormData({ ...formData, safety_score: score })
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>{score}</span>
+											<span className="text-base">{score}</span>
 										</label>
 									))}
 								</div>
@@ -449,8 +451,8 @@ function SurveyPage() {
 								<label className="block font-medium mb-3">
 									4. Apakah Anda menganggap diferensial diagnosis ini dapat diterima sebagai dukungan keputusan dalam praktik klinis?
 								</label>
-								<div className="flex space-x-6">
-									<label className="flex items-center space-x-2 cursor-pointer">
+								<div className="flex flex-wrap gap-3">
+									<label className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors">
 										<input
 											type="radio"
 											name="acceptable"
@@ -458,11 +460,11 @@ function SurveyPage() {
 											onChange={() =>
 												setFormData({ ...formData, acceptable: true })
 											}
-											className="w-4 h-4"
+											className="w-5 h-5"
 										/>
-										<span>Ya</span>
+										<span className="text-base">Ya</span>
 									</label>
-									<label className="flex items-center space-x-2 cursor-pointer">
+									<label className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors">
 										<input
 											type="radio"
 											name="acceptable"
@@ -470,9 +472,9 @@ function SurveyPage() {
 											onChange={() =>
 												setFormData({ ...formData, acceptable: false })
 											}
-											className="w-4 h-4"
+											className="w-5 h-5"
 										/>
-										<span>Tidak</span>
+										<span className="text-base">Tidak</span>
 									</label>
 								</div>
 							</div>
@@ -483,11 +485,11 @@ function SurveyPage() {
 									5. Pada skala 1-5, seberapa tepat urutan diagnosis diferensial
 									(dari yang paling mungkin hingga yang paling tidak mungkin)?
 								</label>
-								<div className="flex space-x-4">
+								<div className="flex flex-wrap gap-3">
 									{[1, 2, 3, 4, 5].map((score) => (
 										<label
 											key={score}
-											className="flex items-center space-x-2 cursor-pointer"
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
 										>
 											<input
 												type="radio"
@@ -497,9 +499,9 @@ function SurveyPage() {
 												onChange={() =>
 													setFormData({ ...formData, ordering_score: score })
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>{score}</span>
+											<span className="text-base">{score}</span>
 										</label>
 									))}
 								</div>
@@ -513,11 +515,11 @@ function SurveyPage() {
 								<label className="block font-medium mb-3">
 									6. Seberapa yakin Anda dengan evaluasi Anda?
 								</label>
-								<div className="flex space-x-4">
+								<div className="flex flex-wrap gap-3">
 									{[1, 2, 3, 4, 5].map((score) => (
 										<label
 											key={score}
-											className="flex items-center space-x-2 cursor-pointer"
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
 										>
 											<input
 												type="radio"
@@ -527,9 +529,9 @@ function SurveyPage() {
 												onChange={() =>
 													setFormData({ ...formData, confidence_level: score })
 												}
-												className="w-4 h-4"
+												className="w-5 h-5"
 											/>
-											<span>{score}</span>
+											<span className="text-base">{score}</span>
 										</label>
 									))}
 								</div>

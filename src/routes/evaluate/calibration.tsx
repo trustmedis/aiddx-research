@@ -24,7 +24,7 @@ function CalibrationPage() {
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
 			<div className="max-w-4xl mx-auto">
-				<div className="bg-white rounded-lg shadow-md p-8 mb-6">
+				<div className="bg-white rounded-lg shadow-md p-2 mb-6">
 					<h1 className="text-3xl font-bold mb-4">Sesi Kalibrasi</h1>
 					<p className="text-gray-700 mb-6">
 						Sebelum memulai evaluasi, mohon tinjau instruksi ini untuk berlatih
@@ -60,13 +60,13 @@ function CalibrationPage() {
 									<div className="flex flex-col md:flex-row gap-2">
 										<div className="border border-gray-300 p-2 rounded space-y-2 flex-1">
 											<div className="font-semibold">Nyeri dada menjalar ke lengan.</div>
-											<div>Diagnosis diferensial: infark miokard (serangan jantung), angina, costochondritis, kecemasan, GERD.</div>
-											<div><span className="font-semibold">Diagnosis Kritis Terlewat?</span> <br /> <span className="font-semibold bg-green-500 p-1 rounded text-white">Tidak</span> karena diagnosis kritis (infark miokard) dimasukkan.</div>
+											<div><strong>Diagnosis diferensial:</strong> <br /> infark miokard (serangan jantung), angina, costochondritis, kecemasan, GERD.</div>
+											<div><span className="font-semibold">Diagnosis Kritis Terlewat?</span> <br /> <span className="font-semibold bg-green-500 px-2 rounded-full text-white">Tidak</span> karena diagnosis kritis (infark miokard) dimasukkan.</div>
 										</div>
 										<div className="border border-gray-300 p-2 rounded space-y-2 flex-1">
 											<div className="font-semibold">Sakit kepala berat, kaku kuduk, demam.</div>
-											<div>Diagnosis diferensial: migrain, sinusitis, tension headache.</div>
-											<div><span className="font-semibold">Diagnosis Kritis Terlewat?</span> <br /> <span className="font-semibold bg-red-500 p-1 rounded text-white">Ya</span> karena AI melewatkan diagnosis meningitis yang berbahaya.</div>
+											<div><strong>Diagnosis diferensial:</strong> <br /> migrain, sinusitis, tension headache.</div>
+											<div><span className="font-semibold">Diagnosis Kritis Terlewat?</span> <br /> <span className="font-semibold bg-red-500 px-2 rounded-full text-white">Ya</span> karena AI melewatkan diagnosis meningitis yang berbahaya.</div>
 										</div>
 									</div>
 								</div>
@@ -149,20 +149,20 @@ function CalibrationPage() {
 							</h3>
 							<ol className="list-decimal list-inside space-y-1 text-sm bg-white p-3 rounded border">
 								<li>
-									<strong>Perdarahan subarachnoid.</strong> Rationale: Sakit kepala hebat mendadak dengan
+									<strong>Perdarahan subarachnoid.</strong> <br />Rasionalitas: Sakit kepala hebat mendadak dengan
 									kekakuan leher, deskripsi "sakit kepala paling parah yang pernah saya rasakan"
 								</li>
 								<li>
-									<strong>Sakit kepala tegang.</strong> Rationale: Penyebab umum sakit kepala, bisa dipicu oleh yoga
+									<strong>Sakit kepala tegang.</strong> <br />Rasionalitas: Penyebab umum sakit kepala, bisa dipicu oleh yoga
 								</li>
 								<li>
-									<strong>Migrain.</strong> Rationale: Fotofobia dan mual adalah gejala yang konsisten
+									<strong>Migrain.</strong> <br />Rasionalitas: Fotofobia dan mual adalah gejala yang konsisten
 								</li>
 								<li>
-									<strong>Meningitis.</strong> Rationale: Kekakuan leher dan sakit kepala menunjukkan
+									<strong>Meningitis.</strong> <br />Rasionalitas: Kekakuan leher dan sakit kepala menunjukkan
 									iritasi meningeal
 								</li>
-								<li><strong>Ketegangan serviks.</strong> Rationale: Terkait posisi olahraga saat onset</li>
+								<li><strong>Ketegangan serviks.</strong> <br />Rasionalitas: Terkait posisi olahraga saat onset</li>
 							</ol>
 						</div>
 
@@ -257,20 +257,20 @@ function CalibrationPage() {
 							</h3>
 							<ol className="list-decimal list-inside space-y-1 text-sm bg-white p-3 rounded border">
 								<li>
-									<strong>Infeksi saluran pernapasan atas.</strong> Rationale: Penyebab paling umum,
+									<strong>Infeksi saluran pernapasan atas.</strong> <br />Rasionalitas: Penyebab paling umum,
 									gejala konsisten, riwayat paparan
 								</li>
 								<li>
-									<strong>Rinitis alergi.</strong> Rationale: Dapat menyebabkan pilek dan iritasi
+									<strong>Rinitis alergi.</strong> <br />Rasionalitas: Dapat menyebabkan pilek dan iritasi
 									tenggorokan
 								</li>
-								<li><strong>COVID-19.</strong> Rationale: Gejala pernapasan dengan riwayat paparan</li>
+								<li><strong>COVID-19.</strong> <br />Rasionalitas: Gejala pernapasan dengan riwayat paparan</li>
 								<li>
-									<strong>Faringitis streptokokus.</strong> Rationale: Sakit tenggorokan, meskipun tidak
+									<strong>Faringitis streptokokus.</strong> <br />Rasionalitas: Sakit tenggorokan, meskipun tidak
 									adanya demam dan eksudat membuatnya kurang mungkin
 								</li>
 								<li>
-									<strong>Influenza.</strong> Rationale: Penyakit pernapasan dengan penyebaran
+									<strong>Influenza.</strong> <br />Rasionalitas: Penyakit pernapasan dengan penyebaran
 									komunitas yang diketahui
 								</li>
 							</ol>

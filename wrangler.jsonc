@@ -5,6 +5,9 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
+	"observability": {
+		"enabled": true
+	},
 	"main": "@tanstack/react-start/server-entry",
 	"vars": {
 		"OPENROUTER_API_KEY": "",

@@ -21,7 +21,7 @@ function RouteComponent() {
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-			<div className="max-w-3xl bg-white rounded-lg shadow-md p-12 text-center">
+			<div className="max-w-3xl bg-white rounded-lg shadow-md p-4 text-center">
 				<h1 className="text-4xl font-bold mb-4">
 					Penelitian Diagnosis Diferensial oleh AI
 				</h1>

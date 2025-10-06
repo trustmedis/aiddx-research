@@ -269,7 +269,7 @@ function AdminPage() {
 	if (!isAuthenticated) {
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-				<div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+				<div className="max-w-md w-full bg-white rounded-lg shadow-md p-2">
 					<h1 className="text-3xl font-bold mb-6 text-center">Admin Login</h1>
 					<form onSubmit={handleLogin} className="space-y-4">
 						<div>
@@ -306,7 +306,7 @@ function AdminPage() {
 	return (
 		<div className="min-h-screen bg-gray-50 py-12 px-4">
 			<div className="max-w-6xl mx-auto">
-				<div className="bg-white rounded-lg shadow-md p-8">
+				<div className="bg-white rounded-lg shadow-md p-2">
 					<div className="flex justify-between items-center mb-6">
 						<h1 className="text-3xl font-bold">Panel Admin</h1>
 						<Button onClick={handleLogout} variant="outline" size="sm">
@@ -524,7 +524,7 @@ function AdminPage() {
 																					)}
 																					{diagnosis.rationale && (
 																						<div className="mb-2">
-																							<strong>Rationale:</strong>
+																							<strong>Rasionalitas:</strong>
 																							<p className="text-sm text-gray-700 mt-1">
 																								{diagnosis.rationale}
 																							</p>
