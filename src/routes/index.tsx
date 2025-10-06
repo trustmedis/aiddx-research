@@ -56,10 +56,6 @@ function RouteComponent() {
 						</Button>
 					</Link>
 				</div>
-
-				<div className="mt-12 pt-8 border-t text-sm text-gray-500">
-					<p className="mt-2">Kontak: abid@ts.co.id</p>
-				</div>
 			</div>
 		</div>
 	);

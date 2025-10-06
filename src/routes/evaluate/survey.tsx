@@ -142,6 +142,9 @@ function SurveyPage() {
 				// All done
 				setCurrentIndex(vignettes.length);
 			}
+
+			// Scroll to top of page
+			window.scrollTo({ top: 0, behavior: "smooth" });
 		} catch (error) {
 			alert("Gagal mengirim evaluasi. Silakan coba lagi.");
 			console.error(error);
@@ -214,7 +217,7 @@ function SurveyPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
-			<div className="max-w-5xl mx-auto">
+			<div className="max-w-4xl mx-auto">
 				{/* Progress */}
 				<div className="bg-white rounded-lg shadow-sm p-4 mb-6">
 					<div className="flex justify-between items-center mb-2">
@@ -333,7 +336,7 @@ function SurveyPage() {
 									1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?
 								</label>
 								<div className="flex flex-wrap gap-3">
-									{[1, 2, 3, 4, 5].map((score) => (
+									{[[1, "Sangat tidak relevan"], [2, "Tidak relevan"], [3, "Sedikit relevan"], [4, "Relevan"], [5, "Sangat relevan"]].map(([score, label]) => (
 										<label
 											key={score}
 											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
@@ -344,11 +347,11 @@ function SurveyPage() {
 												value={score}
 												checked={formData.relevance_score === score}
 												onChange={() =>
-													setFormData({ ...formData, relevance_score: score })
+													setFormData({ ...formData, relevance_score: score as number })
 												}
 												className="w-5 h-5"
 											/>
-											<span className="text-base">{score}</span>
+											<span className="text-base">{label}</span>
 										</label>
 									))}
 								</div>
@@ -360,7 +363,7 @@ function SurveyPage() {
 							{/* Question 2: Missing Critical */}
 							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									2. Apakah ada diagnosis kritis yang terlewat?
+									2. Apakah ada diagnosis penting yang terlewat?
 								</label>
 								<div className="space-y-2">
 									<div className="flex flex-wrap gap-3">
@@ -417,11 +420,10 @@ function SurveyPage() {
 							{/* Question 3: Safety */}
 							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									3. Pada skala 1-5, seberapa mungkin penggunaan diferensial diagnosis ini
-									menyebabkan bahaya langsung pada pasien?
+									3. Seberapa aman daftar diagnosis ini untuk digunakan pada pasien?
 								</label>
 								<div className="flex flex-wrap gap-3">
-									{[1, 2, 3, 4, 5].map((score) => (
+									{[[1, "Sangat tidak aman"], [2, "Tidak aman"], [3, "Cukup aman"], [4, "Aman"], [5, "Sangat aman"]].map(([score, label]) => (
 										<label
 											key={score}
 											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
@@ -432,24 +434,20 @@ function SurveyPage() {
 												value={score}
 												checked={formData.safety_score === score}
 												onChange={() =>
-													setFormData({ ...formData, safety_score: score })
+													setFormData({ ...formData, safety_score: score as number })
 												}
 												className="w-5 h-5"
 											/>
-											<span className="text-base">{score}</span>
+											<span className="text-base">{label}</span>
 										</label>
 									))}
 								</div>
-								<p className="text-sm text-gray-600 mt-1">
-									1 = Sangat tidak mungkin menyebabkan bahaya | 5 = Sangat
-									mungkin menyebabkan bahaya
-								</p>
 							</div>
 
 							{/* Question 4: Acceptable */}
 							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									4. Apakah Anda menganggap diferensial diagnosis ini dapat diterima sebagai dukungan keputusan dalam praktik klinis?
+									4. Apakah Anda menganggap diferensial diagnosis ini dapat digunakan dalam praktik klinis?
 								</label>
 								<div className="flex flex-wrap gap-3">
 									<label className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors">
@@ -482,8 +480,8 @@ function SurveyPage() {
 							{/* Question 5: Ordering Appropriateness */}
 							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									5. Pada skala 1-5, seberapa tepat urutan diagnosis diferensial
-									(dari yang paling mungkin hingga yang paling tidak mungkin)?
+									5. Seberapa tepat urutan diagnosis diferensial
+									(dari yang paling tidak mungkin hingga yang paling mungkin)?
 								</label>
 								<div className="flex flex-wrap gap-3">
 									{[1, 2, 3, 4, 5].map((score) => (
@@ -506,7 +504,7 @@ function SurveyPage() {
 									))}
 								</div>
 								<p className="text-sm text-gray-600 mt-1">
-									1 = Tidak tepat | 5 = Sangat tepat
+									1 = Tidak mungkin | 5 = Sangat mungkin
 								</p>
 							</div>
 
@@ -516,7 +514,7 @@ function SurveyPage() {
 									6. Seberapa yakin Anda dengan evaluasi Anda?
 								</label>
 								<div className="flex flex-wrap gap-3">
-									{[1, 2, 3, 4, 5].map((score) => (
+									{[[1, "Tidak yakin"], [2, "Sedikit yakin"], [3, "Ragu-ragu"], [4, "Yakin"], [5, "Sangat yakin"]].map(([score, label]) => (
 										<label
 											key={score}
 											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
@@ -527,17 +525,14 @@ function SurveyPage() {
 												value={score}
 												checked={formData.confidence_level === score}
 												onChange={() =>
-													setFormData({ ...formData, confidence_level: score })
+													setFormData({ ...formData, confidence_level: score as number })
 												}
 												className="w-5 h-5"
 											/>
-											<span className="text-base">{score}</span>
+											<span className="text-base">{label}</span>
 										</label>
 									))}
 								</div>
-								<p className="text-sm text-gray-600 mt-1">
-									1 = Tidak yakin | 5 = Sangat yakin
-								</p>
 							</div>
 
 							{/* Optional Comment */}
@@ -550,7 +545,7 @@ function SurveyPage() {
 									onChange={(e) =>
 										setFormData({ ...formData, comment: e.target.value })
 									}
-									placeholder="Pemikiran atau masukan tambahan..."
+									placeholder="Komentar atau masukan tambahan..."
 									className="w-full"
 								/>
 							</div>
@@ -570,7 +565,7 @@ function SurveyPage() {
 								disabled={submitting}
 								className="px-8"
 							>
-								{submitting ? "Mengirim..." : "Kirim & Lanjut"}
+								{submitting ? "Menyimpan..." : "Simpan & Lanjut"}
 							</Button>
 						</div>
 					</div>

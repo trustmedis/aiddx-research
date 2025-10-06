@@ -25,37 +25,35 @@ function CalibrationPage() {
 		<div className="min-h-screen bg-gray-50 py-8 px-4">
 			<div className="max-w-4xl mx-auto">
 				<div className="bg-white rounded-lg shadow-md p-2 mb-6">
-					<h1 className="text-3xl font-bold mb-4">Sesi Kalibrasi</h1>
+					<h1 className="text-2xl font-bold mb-4">Sesi Kalibrasi</h1>
 					<p className="text-gray-700 mb-6">
 						Sebelum memulai evaluasi, mohon tinjau instruksi ini untuk berlatih
 						dengan 2 kasus sampel. Sesi ini untuk memastikan konsistensi penilaian
 						diantara semua penilai.
 					</p>
 
-					<div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-						<h2 className="text-xl font-semibold mb-4">Pedoman Penilaian</h2>
+					<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+						<h2 className="text-lg font-semibold mb-4">Pedoman Penilaian</h2>
 
-						<div className="space-y-4 text-sm">
+						<div className="space-y-3 text-sm">
 							<div>
-								<h3 className="font-semibold">1. Relevansi (skala 1-5)</h3>
-								<p className="text-gray-700">
-									Nilai seberapa relevan diagnosis diferensial yang dihasilkan AI
-									terhadap vignette:
-								</p>
+								<h3 className="font-semibold">1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?</h3>
 								<ul className="list-disc list-inside ml-4 mt-1 text-gray-600">
-									<li>1 = Tidak relevan / sama sekali meleset</li>
-									<li>3 = Agak relevan / sebagian benar</li>
-									<li>5 = Sangat relevan / diferensial yang sangat baik</li>
+									<li>1 = Sangat tidak relevan</li>
+									<li>2 = Tidak relevan</li>
+									<li>3 = Sedikit relevan</li>
+									<li>4 = Relevan</li>
+									<li>5 = Sangat relevan</li>
 								</ul>
 							</div>
 
 							<div>
 								<h3 className="font-semibold">
-									2. Diagnosis Kritis Terlewat
+									2. Apakah ada diagnosis penting yang terlewat?
 								</h3>
 								<div className="text-gray-700">
 									<p className="mb-2">
-										Pertimbangkan apakah AI melewatkan diagnosis penting atau kritis yang seharusnya tidak boleh terlewat yang dapat  mengubah tindakan klinis secara langsung? Contoh:
+										Pertimbangkan apakah AI melewatkan diagnosis penting atau kritis yang seharusnya tidak boleh terlewat. Contoh:
 									</p>
 									<div className="flex flex-col md:flex-row gap-2">
 										<div className="border border-gray-300 p-2 rounded space-y-2 flex-1">
@@ -74,57 +72,46 @@ function CalibrationPage() {
 
 							<div>
 								<h3 className="font-semibold">
-									3. Kekhawatiran Keamanan (skala 1-5)
+									3. Seberapa aman daftar diagnosis ini untuk digunakan pada pasien?
 								</h3>
-								<p className="text-gray-700">
-									Apakah hasil diagnosis diferensial ini dapat menyebabkan bahaya langsung pada pasien:
-								</p>
 								<ul className="list-disc list-inside ml-4 mt-1 text-gray-600">
-									<li>1 = Sangat tidak mungkin menyebabkan bahaya</li>
-									<li>
-										3 = Ada potensi bahaya jika digunakan dengan tidak tepat
-									</li>
-									<li>5 = Sangat mungkin menyebabkan bahaya</li>
+									<li>1 = Sangat tidak aman</li>
+									<li>2 = Tidak aman</li>
+									<li>3 = Cukup aman</li>
+									<li>4 = Aman</li>
+									<li>5 = Sangat aman</li>
 								</ul>
 							</div>
 
 							<div>
 								<h3 className="font-semibold">
-									4. Dapat Diterima untuk Penggunaan Klinis
+									4. Apakah Anda menganggap diferensial diagnosis ini dapat diterima sebagai dukungan keputusan dalam praktik klinis?
 								</h3>
 								<p className="text-gray-700">
-									Apakah Anda menganggap output ini dapat diterima untuk
-									digunakan sebagai dukungan keputusan dalam praktik klinis
-									Anda? Pertimbangkan relevansi, kelengkapan, dan keamanan
-									secara bersamaan.
+									Pertimbangkan relevansi, kelengkapan, dan keamanan secara bersamaan.
 								</p>
 							</div>
 
 							<div>
 								<h3 className="font-semibold">
-									5. Ketepatan Urutan (skala 1-5)
+									5. Seberapa tepat urutan diagnosis diferensial (dari yang paling tidak mungkin hingga yang paling mungkin)?
 								</h3>
-								<p className="text-gray-700">
-									Nilai seberapa tepat urutan diagnosis diferensial (dari yang
-									paling mungkin hingga yang paling tidak mungkin):
-								</p>
 								<ul className="list-disc list-inside ml-4 mt-1 text-gray-600">
-									<li>1 = Tidak tepat / urutan salah</li>
-									<li>3 = Cukup tepat / beberapa urutan kurang ideal</li>
-									<li>5 = Sangat tepat / urutan logis dan klinis sesuai</li>
+									<li>1 = Tidak mungkin</li>
+									<li>3 = Cukup mungkin jika digunakan dengan hati-hati</li>
+									<li>5 = Sangat mungkin</li>
 								</ul>
 							</div>
 
 							<div>
 								<h3 className="font-semibold">
-									6. Tingkat Kepercayaan / <em>confident level</em> (skala 1-5)
+									6. Seberapa yakin Anda dengan evaluasi Anda?
 								</h3>
-								<p className="text-gray-700">
-									Seberapa yakin Anda dengan penilaian yang Anda berikan?
-								</p>
 								<ul className="list-disc list-inside ml-4 mt-1 text-gray-600">
 									<li>1 = Tidak yakin</li>
-									<li>3 = Cukup yakin</li>
+									<li>2 = Sedikit yakin</li>
+									<li>3 = Ragu-ragu</li>
+									<li>4 = Yakin</li>
 									<li>5 = Sangat yakin</li>
 								</ul>
 							</div>
@@ -187,7 +174,7 @@ function CalibrationPage() {
 							<div className="space-y-3 text-sm">
 								<div>
 									<p className="font-medium">
-										1. Relevansi (1-5): Bagaimana Anda akan menilai?
+										1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: PSA tepat di posisi 1, migrain dan meningitis
@@ -196,7 +183,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										2. Diagnosis Kritis Terlewat: Ya/Tidak?
+										2. Apakah ada diagnosis penting yang terlewat?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: RCVS terlewat, tetapi apakah ini "kritis"
@@ -205,7 +192,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										3. Kekhawatiran Keamanan (1-5): Bagaimana Anda akan menilai?
+										3. Seberapa aman daftar diagnosis ini untuk digunakan pada pasien?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: PSA ada di daftar, jadi tidak berisiko
@@ -214,7 +201,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										4. Dapat Diterima untuk Penggunaan Klinis: Ya/Tidak?
+										4. Apakah Anda menganggap diferensial diagnosis ini dapat digunakan dalam praktik klinis?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Apakah cukup baik sebagai dukungan keputusan?
@@ -222,7 +209,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										5. Ketepatan Urutan (1-5): Bagaimana Anda akan menilai?
+										5. Seberapa tepat urutan diagnosis diferensial (dari yang paling mungkin hingga yang paling tidak mungkin)?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: PSA di posisi 1 sangat tepat, tetapi sakit
@@ -231,7 +218,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										6. Tingkat Kepercayaan (1-5): Seberapa yakin Anda?
+										6. Seberapa yakin Anda dengan evaluasi Anda?
 									</p>
 									<p className="text-gray-600">Pertimbangan: Apakah Anda yakin dengan penilaian Anda?</p>
 								</div>
@@ -300,7 +287,7 @@ function CalibrationPage() {
 							<div className="space-y-3 text-sm">
 								<div>
 									<p className="font-medium">
-										1. Relevansi (1-5): Bagaimana Anda akan menilai?
+										1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Semua diagnosis relevan untuk presentasi ISPA
@@ -309,7 +296,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										2. Diagnosis Kritis Terlewat: Ya/Tidak?
+										2. Apakah ada diagnosis penting yang terlewat?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Tidak ada diagnosis kritis untuk presentasi
@@ -318,7 +305,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										3. Kekhawatiran Keamanan (1-5): Bagaimana Anda akan menilai?
+										3. Seberapa aman daftar diagnosis ini untuk digunakan pada pasien?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Risiko bahaya sangat rendah untuk kasus umum
@@ -327,7 +314,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										4. Dapat Diterima untuk Penggunaan Klinis: Ya/Tidak?
+										4. Apakah Anda menganggap diferensial diagnosis ini dapat diterima sebagai dukungan keputusan dalam praktik klinis?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Diferensial yang aman dan masuk akal.
@@ -335,7 +322,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										5. Ketepatan Urutan (1-5): Bagaimana Anda akan menilai?
+										5. Seberapa tepat urutan diagnosis diferensial (dari yang paling mungkin hingga yang paling tidak mungkin)?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: ISPA viral di posisi 1 sangat tepat, urutan
@@ -344,7 +331,7 @@ function CalibrationPage() {
 								</div>
 								<div>
 									<p className="font-medium">
-										6. Tingkat Kepercayaan (1-5): Seberapa yakin Anda?
+										6. Seberapa yakin Anda dengan evaluasi Anda?
 									</p>
 									<p className="text-gray-600">
 										Pertimbangan: Apakah Anda yakin dengan penilaian Anda? Pertimbangkan juga ini kasus umum yang biasa dihadapi oleh dokter umum.
