@@ -13,12 +13,8 @@
 		{
 			"binding": "DB",
 			"database_name": "ai-dx-research",
-			"database_id": "local-dev-db"
-		},
-		{
-			"binding": "ai_dx_research",
-			"database_name": "ai-dx-research",
-			"database_id": "53d3e611-34d7-4749-8c5b-08a9a1334cfe"
+			"database_id": "53d3e611-34d7-4749-8c5b-08a9a1334cfe",
+			"preview_database_id": "53d3e611-34d7-4749-8c5b-08a9a1334cfe"
 		}
 	]
 }
