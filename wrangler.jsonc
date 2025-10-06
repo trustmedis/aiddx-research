@@ -1,0 +1,24 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "aiddx",
+	"compatibility_date": "2025-09-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "@tanstack/react-start/server-entry",
+	"vars": {
+		"OPENROUTER_API_KEY": ""
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "ai-dx-research",
+			"database_id": "local-dev-db"
+		},
+		{
+			"binding": "ai_dx_research",
+			"database_name": "ai-dx-research",
+			"database_id": "1ce1ff15-dd43-4672-b124-5790f26ecd03"
+		}
+	]
+}

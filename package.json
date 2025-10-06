@@ -1,0 +1,53 @@
+{
+	"name": "aiddx",
+	"private": true,
+	"sideEffects": false,
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build && tsc --noEmit",
+		"preview": "vite preview",
+		"deploy": "bun run db:migrate:prod && wrangler deploy",
+		"deploy:skip-migrations": "wrangler deploy",
+		"cf-typegen": "wrangler types",
+		"lint": "tsc --noEmit && bunx biome check --write",
+		"postinstall": "npm run cf-typegen",
+		"db:migrate:local": "bash scripts/migrate.sh local",
+		"db:migrate:prod": "bash scripts/migrate.sh prod",
+		"db:setup:local": "bunx wrangler d1 create ai-dx-research && bun run db:migrate:local"
+	},
+	"dependencies": {
+		"@ai-sdk/openai": "^2.0.42",
+		"@radix-ui/react-dialog": "^1.1.15",
+		"@radix-ui/react-select": "^2.2.6",
+		"@radix-ui/react-slot": "^1.2.3",
+		"@tailwindcss/postcss": "^4.1.14",
+		"@tanstack/react-router": "^1.132.33",
+		"@tanstack/react-router-devtools": "^1.132.33",
+		"@tanstack/react-start": "^1.132.35",
+		"ai": "^5.0.60",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"lucide-react": "^0.544.0",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"tailwind-merge": "^3.3.1",
+		"zod": "^4.1.11"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.5",
+		"@cloudflare/vite-plugin": "^1.13.7",
+		"@types/node": "^22.5.4",
+		"@types/react": "^19.0.8",
+		"@types/react-dom": "^19.0.3",
+		"@vitejs/plugin-react": "^4.6.0",
+		"autoprefixer": "^10.4.20",
+		"postcss": "^8.5.6",
+		"tailwindcss": "^4.1.14",
+		"tw-animate-css": "^1.4.0",
+		"typescript": "^5.7.2",
+		"vite": "^7.1.7",
+		"vite-tsconfig-paths": "^5.1.4",
+		"wrangler": "^4.40.2"
+	}
+}
