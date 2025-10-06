@@ -19,8 +19,7 @@ export const Route = createRootRoute({
 			},
 			...seo({
 				title:
-					"Riset Diagnosis Diferensial AI | Evaluasi Dukungan Keputusan Klinis LLM",
-				description: `Studi evaluasi kegunaan klinis dari diagnosis diferensial yang dihasilkan AI untuk profesional medis Indonesia.`,
+					"DDX Research",
 			}),
 		],
 		links: [

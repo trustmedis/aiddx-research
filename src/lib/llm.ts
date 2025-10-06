@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { Diagnosis } from "~/types";
 
 const PROMPT_TEMPLATE = `**Purpose:**
-Generate a prioritized differential diagnosis based on SOAP (Subjective & Objective) findings, tailored to Indonesia's epidemiological, cultural, and healthcare landscape. The output will include **ICD-10** codes for each diagnosis.
+Generate a prioritized differential diagnosis based on SOAP (Subjective & Objective) findings, tailored to Indonesia's epidemiological, cultural, and healthcare landscape. The output will include **ICD-10** codes for each diagnosis. All output must be written in Bahasa Indonesia.
 
 ---
 
@@ -29,8 +29,8 @@ Order diagnoses by likelihood, accounting for:
 - **Diagnostic Tests:** Recommend locally accessible tests.
 - **Regional Considerations:** Note cultural practices, healthcare access barriers, or environmental exposures.
 
-### 3. **Missing Information Alert:**
-Identify critical gaps in history or exams.
+### 3. **Output Language:**
+Output must be written in Bahasa Indonesia.
 
 ---
 
@@ -63,7 +63,6 @@ const DiagnosisSchema = z.object({
 			}),
 		)
 		.min(1)
-		.max(5)
 		.describe("Array of differential diagnoses, ranked by likelihood"),
 	missingInformation: z
 		.array(z.string())
@@ -74,7 +73,7 @@ const DiagnosisSchema = z.object({
 export interface GenerateDiagnosesParams {
 	vignette: string;
 	temperature?: number;
-	modelName?: string;
+	modelName: string;
 	apiKey: string;
 }
 
@@ -84,7 +83,7 @@ export async function generateDifferentialDiagnoses(
 	const {
 		vignette,
 		temperature = 0.1,
-		modelName = "openai/gpt-4o",
+		modelName,
 		apiKey,
 	} = params;
 

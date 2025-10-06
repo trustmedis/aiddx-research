@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import {
 	Select,
@@ -11,22 +19,15 @@ import {
 } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "~/components/ui/dialog";
-import {
 	createVignette,
 	deleteVignette,
 	generateDiagnoses,
 	getAllVignettesWithStats,
 	modelName,
 	updateVignette,
+	validateAdminPassword,
 } from "~/server/functions";
-import type { VignetteCategory, Diagnosis } from "~/types";
+import type { Diagnosis, VignetteCategory } from "~/types";
 
 export const Route = createFileRoute("/admin/")({
 	component: AdminPage,
@@ -44,8 +45,15 @@ interface VignetteWithStats {
 }
 
 function AdminPage() {
+	// Authentication state
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [password, setPassword] = useState("");
+	const [authError, setAuthError] = useState("");
+	const [authenticating, setAuthenticating] = useState(false);
+
 	const [activeTab, setActiveTab] = useState<"vignettes" | "llm">("vignettes");
 	const [apiKey, setApiKey] = useState("");
+	const [modelNameInput, setModelNameInput] = useState("");
 	const [generating, setGenerating] = useState(false);
 	const [status, setStatus] = useState<string>("");
 	const [progress, setProgress] = useState({ current: 0, total: 0 });
@@ -60,6 +68,46 @@ function AdminPage() {
 		patientInitials: "",
 		content: "",
 	});
+
+	// Check authentication on mount
+	useEffect(() => {
+		const authenticated = sessionStorage.getItem("admin_authenticated");
+		if (authenticated === "true") {
+			setIsAuthenticated(true);
+		}
+	}, []);
+
+	// Handle login
+	const handleLogin = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setAuthenticating(true);
+		setAuthError("");
+
+		try {
+			const result = await validateAdminPassword({
+				data: { password },
+			});
+
+			if (result.valid) {
+				setIsAuthenticated(true);
+				sessionStorage.setItem("admin_authenticated", "true");
+				setPassword("");
+			} else {
+				setAuthError("Kata sandi salah");
+			}
+		} catch (error) {
+			console.error(error);
+			setAuthError("Gagal memvalidasi kata sandi");
+		} finally {
+			setAuthenticating(false);
+		}
+	};
+
+	// Handle logout
+	const handleLogout = () => {
+		setIsAuthenticated(false);
+		sessionStorage.removeItem("admin_authenticated");
+	};
 
 	const loadVignettes = useCallback(async () => {
 		try {
@@ -103,6 +151,7 @@ function AdminPage() {
 					data: {
 						vignetteId: vignette.id,
 						apiKey: apiKey.trim() || undefined,
+						modelName: modelNameInput.trim() || undefined,
 					},
 				});
 
@@ -209,39 +258,82 @@ function AdminPage() {
 				return "bg-yellow-100 text-yellow-800";
 			case "emergent":
 				return "bg-red-100 text-red-800";
+			case "rare":
+				return "bg-purple-100 text-purple-800";
 			default:
 				return "bg-gray-100 text-gray-800";
 		}
 	};
 
+	// Show login form if not authenticated
+	if (!isAuthenticated) {
+		return (
+			<div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+				<div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+					<h1 className="text-3xl font-bold mb-6 text-center">Admin Login</h1>
+					<form onSubmit={handleLogin} className="space-y-4">
+						<div>
+							<label className="block text-sm font-medium mb-2">
+								Kata Sandi Admin
+							</label>
+							<Input
+								type="password"
+								placeholder="Masukkan kata sandi"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								required
+								autoFocus
+							/>
+						</div>
+						{authError && (
+							<div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+								{authError}
+							</div>
+						)}
+						<Button
+							type="submit"
+							disabled={authenticating}
+							className="w-full"
+						>
+							{authenticating ? "Memvalidasi..." : "Masuk"}
+						</Button>
+					</form>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="min-h-screen bg-gray-50 py-12 px-4">
 			<div className="max-w-6xl mx-auto">
 				<div className="bg-white rounded-lg shadow-md p-8">
-					<h1 className="text-3xl font-bold mb-6">Panel Admin</h1>
+					<div className="flex justify-between items-center mb-6">
+						<h1 className="text-3xl font-bold">Panel Admin</h1>
+						<Button onClick={handleLogout} variant="outline" size="sm">
+							Keluar
+						</Button>
+					</div>
 
 					{/* Tabs */}
 					<div className="border-b mb-6">
 						<div className="flex space-x-4">
 							<button
 								onClick={() => setActiveTab("vignettes")}
-								className={`pb-2 px-1 ${
-									activeTab === "vignettes"
-										? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-										: "text-gray-600 hover:text-gray-800"
-								}`}
+								className={`pb-2 px-1 ${activeTab === "vignettes"
+									? "border-b-2 border-blue-600 text-blue-600 font-semibold"
+									: "text-gray-600 hover:text-gray-800"
+									}`}
 							>
 								Manajemen Vignette
 							</button>
 							<button
 								onClick={() => setActiveTab("llm")}
-								className={`pb-2 px-1 ${
-									activeTab === "llm"
-										? "border-b-2 border-blue-600 text-blue-600 font-semibold"
-										: "text-gray-600 hover:text-gray-800"
-								}`}
+								className={`pb-2 px-1 ${activeTab === "llm"
+									? "border-b-2 border-blue-600 text-blue-600 font-semibold"
+									: "text-gray-600 hover:text-gray-800"
+									}`}
 							>
-								Generasi LLM
+								LLM Generation
 							</button>
 						</div>
 					</div>
@@ -281,6 +373,7 @@ function AdminPage() {
 														<SelectItem value="common">Umum</SelectItem>
 														<SelectItem value="ambiguous">Ambigu</SelectItem>
 														<SelectItem value="emergent">Emergensi</SelectItem>
+														<SelectItem value="rare">Langka</SelectItem>
 													</SelectContent>
 												</Select>
 											</div>
@@ -439,7 +532,7 @@ function AdminPage() {
 																					)}
 																					{diagnosis.diagnosticTests &&
 																						diagnosis.diagnosticTests.length >
-																							0 && (
+																						0 && (
 																							<div className="mb-2">
 																								<strong>
 																									Diagnostic Tests:
@@ -559,10 +652,27 @@ function AdminPage() {
 								</p>
 							</div>
 
+							<div>
+								<label className="block text-sm font-medium mb-2">
+									Model OpenRouter (Opsional)
+								</label>
+								<Input
+									type="text"
+									placeholder={`contoh: ${modelName}`}
+									value={modelNameInput}
+									onChange={(e) => setModelNameInput(e.target.value)}
+									className="max-w-md"
+								/>
+								<p className="text-sm text-gray-500 mt-1">
+									Kosongkan untuk menggunakan model default ({modelName}).
+									Atau masukkan nama model OpenRouter (contoh: openai/gpt-4o, anthropic/claude-3.5-sonnet).
+								</p>
+							</div>
+
 							<div className="bg-gray-50 border rounded-lg p-4">
-								<h2 className="font-semibold mb-2">Pengaturan Generasi:</h2>
+								<h2 className="font-semibold mb-2">Pengaturan Generation:</h2>
 								<ul className="text-sm text-gray-700 space-y-1">
-									<li>• Model: {modelName} (via OpenRouter)</li>
+									<li>• Model: {modelNameInput || modelName} (via OpenRouter)</li>
 									<li>• Temperatur: 0.1</li>
 									<li>• Maksimal diagnosis per vignette: 5</li>
 									<li>• Menggunakan structured output (skema Zod)</li>
@@ -610,13 +720,12 @@ function AdminPage() {
 
 							{status && (
 								<div
-									className={`p-4 rounded-lg ${
-										status.startsWith("✓")
-											? "bg-green-50 border border-green-200 text-green-800"
-											: status.startsWith("✗")
-												? "bg-red-50 border border-red-200 text-red-800"
-												: "bg-blue-50 border border-blue-200 text-blue-800"
-									}`}
+									className={`p-4 rounded-lg ${status.startsWith("✓")
+										? "bg-green-50 border border-green-200 text-green-800"
+										: status.startsWith("✗")
+											? "bg-red-50 border border-red-200 text-red-800"
+											: "bg-blue-50 border border-blue-200 text-blue-800"
+										}`}
 								>
 									<p>{status}</p>
 								</div>
@@ -634,7 +743,7 @@ function AdminPage() {
 										OpenRouter API key Anda di atas
 									</li>
 									<li>
-										Klik "Hasilkan Semua Diagnosis" untuk memulai generasi batch
+										Klik "Hasilkan Semua Diagnosis" untuk memulai batch generation
 									</li>
 									<li>
 										Tunggu hingga selesai (mungkin memakan waktu 2-3 menit untuk

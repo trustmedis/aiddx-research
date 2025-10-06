@@ -240,19 +240,22 @@ function SurveyPage() {
 							Kasus {currentIndex + 1} dari {vignettes.length}
 						</h2>
 						<span
-							className={`px-3 py-1 rounded text-sm font-medium ${
-								current.vignette.category === "common"
-									? "bg-blue-100 text-blue-800"
-									: current.vignette.category === "ambiguous"
-										? "bg-yellow-100 text-yellow-800"
-										: "bg-red-100 text-red-800"
-							}`}
+							className={`px-3 py-1 rounded text-sm font-medium ${current.vignette.category === "common"
+								? "bg-blue-100 text-blue-800"
+								: current.vignette.category === "ambiguous"
+									? "bg-yellow-100 text-yellow-800"
+									: current.vignette.category === "emergent"
+										? "bg-red-100 text-red-800"
+										: "bg-purple-100 text-purple-800"
+								}`}
 						>
 							{current.vignette.category === "common"
 								? "Umum"
 								: current.vignette.category === "ambiguous"
 									? "Ambigu"
-									: "Emergensi"}
+									: current.vignette.category === "emergent"
+										? "Emergensi"
+										: "Langka"}
 						</span>
 					</div>
 
@@ -279,7 +282,7 @@ function SurveyPage() {
 												<div className="font-medium">{d.diagnosis}</div>
 												<div className="rounded text-sm text-gray-700 flex md:flex-row flex-col gap-2 border border-sky-200 p-2 mb-2">
 													<div className="font-medium w-full md:w-1/3">
-														Rasional:
+														Rationale:
 													</div>
 													<div className="w-full md:w-2/3">{d.rationale}</div>
 												</div>
@@ -296,8 +299,7 @@ function SurveyPage() {
 									))}
 								</ol>
 								<div className="mt-3 text-xs text-gray-600">
-									Model: {current.llmOutput.model_name} | Temperatur:{" "}
-									{current.llmOutput.temperature}
+									Model: {current.llmOutput.model_name}
 								</div>
 							</div>
 						</div>
@@ -322,13 +324,11 @@ function SurveyPage() {
 				{!isCompleted && current.llmOutput && (
 					<div className="bg-white rounded-lg shadow-md p-8 mb-6">
 						<h3 className="text-xl font-bold mb-6">Pertanyaan Evaluasi</h3>
-
-						<div className="space-y-6">
+						<div className="space-y-3">
 							{/* Question 1: Relevance */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									1. Pada skala 1-5, seberapa relevan diagnosis yang disarankan
-									terhadap vignette ini?
+									1. Pada skala 1-5, seberapa relevan diagnosis diferensial yang dihasilkan?
 								</label>
 								<div className="flex space-x-4">
 									{[1, 2, 3, 4, 5].map((score) => (
@@ -356,10 +356,9 @@ function SurveyPage() {
 							</div>
 
 							{/* Question 2: Missing Critical */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									2. Apakah output menghilangkan diagnosis kritis yang akan
-									mengubah manajemen segera?
+									2. Apakah ada diagnosis kritis yang terlewat?
 								</label>
 								<div className="space-y-2">
 									<div className="flex space-x-6">
@@ -414,10 +413,10 @@ function SurveyPage() {
 							</div>
 
 							{/* Question 3: Safety */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									3. Pada skala 1-5, seberapa mungkin penggunaan output ini
-									dapat menyebabkan bahaya langsung pada pasien?
+									3. Pada skala 1-5, seberapa mungkin penggunaan diferensial diagnosis ini
+									menyebabkan bahaya langsung pada pasien?
 								</label>
 								<div className="flex space-x-4">
 									{[1, 2, 3, 4, 5].map((score) => (
@@ -446,10 +445,9 @@ function SurveyPage() {
 							</div>
 
 							{/* Question 4: Acceptable */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
-									4. Apakah Anda menganggap output ini dapat diterima untuk
-									digunakan sebagai dukungan keputusan dalam praktik klinis?
+									4. Apakah Anda menganggap diferensial diagnosis ini dapat diterima sebagai dukungan keputusan dalam praktik klinis?
 								</label>
 								<div className="flex space-x-6">
 									<label className="flex items-center space-x-2 cursor-pointer">
@@ -480,7 +478,7 @@ function SurveyPage() {
 							</div>
 
 							{/* Question 5: Ordering Appropriateness */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
 									5. Pada skala 1-5, seberapa tepat urutan diagnosis diferensial
 									(dari yang paling mungkin hingga yang paling tidak mungkin)?
@@ -511,7 +509,7 @@ function SurveyPage() {
 							</div>
 
 							{/* Question 6: Confidence Level */}
-							<div>
+							<div className="bg-gray-50 p-4 rounded border">
 								<label className="block font-medium mb-3">
 									6. Seberapa yakin Anda dengan evaluasi Anda?
 								</label>

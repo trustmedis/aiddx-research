@@ -1,7 +1,7 @@
 -- Vignettes table (pre-seeded clinical cases)
 CREATE TABLE vignettes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  category TEXT NOT NULL, -- 'common', 'ambiguous', 'emergent'
+  category TEXT NOT NULL, -- 'common', 'ambiguous', 'emergent', 'rare'
   content TEXT NOT NULL,
   patient_initials TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP

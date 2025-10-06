@@ -4,12 +4,16 @@ import { Database } from "~/lib/db";
 import { generateDifferentialDiagnoses } from "~/lib/llm";
 import type { Evaluation, VignetteCategory } from "~/types";
 
-export const modelName = "google/gemini-2.5-flash-lite";
+// Default model configuration (can be overridden per-request)
+export const modelName = "google/gemini-2.5-flash-preview-09-2025";
 export const modelTemperature = 0.1;
 
 // Generate diagnoses for a specific vignette
 export const generateDiagnoses = createServerFn({ method: "POST" })
-	.inputValidator((data: { vignetteId: number; apiKey?: string }) => data)
+	.inputValidator(
+		(data: { vignetteId: number; apiKey?: string; modelName?: string }) =>
+			data,
+	)
 	.handler(async ({ data }) => {
 		const db = new Database(env.DB);
 
@@ -30,19 +34,22 @@ export const generateDiagnoses = createServerFn({ method: "POST" })
 			throw new Error("OpenRouter API key not provided");
 		}
 
+		// Use provided model name or fall back to default
+		const selectedModel = data.modelName || modelName;
+
 		// Generate using LLM
 		const diagnoses = await generateDifferentialDiagnoses({
 			vignette: vignette.content,
 			apiKey,
 			temperature: modelTemperature,
-			modelName,
+			modelName: selectedModel,
 		});
 
 		// Save to database
 		const outputId = await db.saveLLMOutput(
 			data.vignetteId,
 			diagnoses,
-			modelName,
+			selectedModel,
 			modelTemperature,
 		);
 
@@ -50,7 +57,7 @@ export const generateDiagnoses = createServerFn({ method: "POST" })
 			id: outputId,
 			vignette_id: data.vignetteId,
 			diagnoses,
-			model_name: modelName,
+			model_name: selectedModel,
 			temperature: modelTemperature,
 			created_at: new Date().toISOString(),
 		};
@@ -265,5 +272,20 @@ export const deleteVignette = createServerFn({ method: "POST" })
 			success: true,
 			deletedEvaluations: stats.evaluationCount,
 			deletedLLMOutput: stats.hasLLMOutput,
+		};
+	});
+
+// Validate admin password
+export const validateAdminPassword = createServerFn({ method: "POST" })
+	.inputValidator((data: { password: string }) => data)
+	.handler(async ({ data }) => {
+		const adminPassword = env.ADMIN_PASSWORD;
+
+		if (!adminPassword) {
+			throw new Error("Admin password not configured");
+		}
+
+		return {
+			valid: data.password === adminPassword,
 		};
 	});

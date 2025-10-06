@@ -1,4 +1,4 @@
-export type VignetteCategory = "common" | "ambiguous" | "emergent";
+export type VignetteCategory = "common" | "ambiguous" | "emergent" | "rare";
 
 export interface Vignette {
 	id: number;

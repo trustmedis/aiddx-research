@@ -2,12 +2,19 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useId, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { getAllVignettesWithStats } from "~/server/functions";
 
 export const Route = createFileRoute("/evaluate/consent")({
+	loader: async () => {
+		return {
+			vignettes: await getAllVignettesWithStats(),
+		};
+	},
 	component: ConsentPage,
 });
 
 function ConsentPage() {
+	const { vignettes } = Route.useLoaderData();
 	const navigate = useNavigate();
 	const [raterId, setRaterId] = useState("");
 	const [agreed, setAgreed] = useState(false);
@@ -26,7 +33,7 @@ function ConsentPage() {
 		<div className="min-h-screen bg-gray-50 py-12 px-4">
 			<div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-8">
 				<h1 className="text-3xl font-bold mb-6">
-					Studi Evaluasi Diagnosis Diferensial
+					Studi Evaluasi Diagnosis Diferensial oleh AI
 				</h1>
 
 				<div className="space-y-6 mb-8">
@@ -34,9 +41,9 @@ function ConsentPage() {
 						<h2 className="text-xl font-semibold mb-3">Tujuan</h2>
 						<p className="text-gray-700">
 							Studi ini mengevaluasi kegunaan klinis dari diagnosis diferensial
-							yang dihasilkan AI. Anda akan meninjau 15 vignette pasien dan
+							yang dihasilkan AI. Anda akan meninjau {vignettes.length} vignette pasien dan
 							menilai apakah diagnosis yang dihasilkan LLM relevan, aman, dan
-							dapat diterima untuk dukungan keputusan klinis.
+							dapat diterima untuk mendukung keputusan klinis.
 						</p>
 					</section>
 
@@ -45,23 +52,19 @@ function ConsentPage() {
 							Yang Akan Anda Lakukan
 						</h2>
 						<ul className="list-disc list-inside text-gray-700 space-y-2">
-							<li>Menyelesaikan sesi kalibrasi singkat (2 kasus latihan)</li>
+							<li>Melakukan sesi kalibrasi singkat (2 kasus latihan)</li>
 							<li>
-								Mengevaluasi 15 vignette klinis dengan diagnosis diferensial
+								Mengevaluasi {vignettes.length} vignette klinis dengan diagnosis diferensial
 								yang dihasilkan AI
 							</li>
-							<li>
-								Menjawab 4 pertanyaan per vignette (memakan waktu ~2-3 menit per
-								kasus)
-							</li>
-							<li>Total waktu: sekitar 45-60 menit</li>
+							<li>Total waktu: sekitar 15-25 menit</li>
 						</ul>
 					</section>
 
 					<section>
 						<h2 className="text-xl font-semibold mb-3">Kerahasiaan</h2>
 						<p className="text-gray-700">
-							Semua vignette adalah kasus sintetis/de-identifikasi. Tanggapan
+							Semua vignette adalah kasus sintetis/<em>de-identified</em>. Tanggapan
 							Anda akan dianonimkan dan hanya digunakan untuk tujuan penelitian.
 							ID penilai Anda hanya untuk melacak progres.
 						</p>
@@ -87,9 +90,6 @@ function ConsentPage() {
 							onChange={(e) => setRaterId(e.target.value)}
 							className="max-w-md"
 						/>
-						<p className="text-sm text-gray-500 mt-1">
-							Gunakan ID yang diberikan kepada Anda oleh koordinator penelitian
-						</p>
 					</div>
 
 					<div className="flex items-start space-x-3">
