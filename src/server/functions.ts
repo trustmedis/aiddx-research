@@ -2,7 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { env } from "cloudflare:workers";
 import { Database } from "~/lib/db";
 import { generateDifferentialDiagnoses } from "~/lib/llm";
-import type { Evaluation, VignetteCategory } from "~/types";
+import type {
+	Evaluation,
+	RaterDemographics,
+	VignetteCategory,
+} from "~/types";
 
 // Default model configuration (can be overridden per-request)
 export const modelName = "google/gemini-2.5-flash-preview-09-2025";
@@ -288,4 +292,37 @@ export const validateAdminPassword = createServerFn({ method: "POST" })
 		return {
 			valid: data.password === adminPassword,
 		};
+	});
+
+// Submit rater demographics
+export const submitRaterDemographics = createServerFn({ method: "POST" })
+	.inputValidator(
+		(data: Omit<RaterDemographics, "id" | "created_at">) => data,
+	)
+	.handler(async ({ data }) => {
+		const db = new Database(env.DB);
+
+		// Check if already submitted
+		const alreadySubmitted = await db.hasSubmittedDemographics(data.rater_id);
+
+		if (alreadySubmitted) {
+			throw new Error(
+				"Demographics have already been submitted by this rater",
+			);
+		}
+
+		const demographicsId = await db.saveRaterDemographics(data);
+
+		return {
+			success: true,
+			demographicsId,
+		};
+	});
+
+// Get rater demographics
+export const getRaterDemographicsData = createServerFn({ method: "GET" })
+	.inputValidator((data: { raterId: string }) => data)
+	.handler(async ({ data }) => {
+		const db = new Database(env.DB);
+		return await db.getRaterDemographics(data.raterId);
 	});

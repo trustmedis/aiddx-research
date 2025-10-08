@@ -59,3 +59,36 @@ export interface EvaluationFormData {
 	confidence_level: number;
 	comment: string;
 }
+
+export type PracticeLocation = "hospital" | "clinic" | "puskesmas" | "home";
+
+export type AIConcern =
+	| "liability"
+	| "risk"
+	| "privacy"
+	| "clinical_reasoning_inability"
+	| "transparency_lack"
+	| "other";
+
+export interface RaterDemographics {
+	id?: number;
+	rater_id: string;
+	years_of_practice: number;
+	practice_location: PracticeLocation;
+	ai_clinical_reasoning_confidence: number; // 1-5
+	ai_safety_concern: number; // 1-5
+	ai_decision_support_willingness: number; // 1-3
+	ai_concerns: AIConcern[]; // Array of concerns
+	phone_number: string | null; // Optional phone number for prize lottery
+	created_at?: string;
+}
+
+export interface DemographicsFormData {
+	years_of_practice: number;
+	practice_location: PracticeLocation | "";
+	ai_clinical_reasoning_confidence: number;
+	ai_safety_concern: number;
+	ai_decision_support_willingness: number;
+	ai_concerns: AIConcern[];
+	phone_number: string;
+}

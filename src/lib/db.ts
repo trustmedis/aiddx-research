@@ -2,6 +2,7 @@ import type {
 	Diagnosis,
 	Evaluation,
 	LLMOutput,
+	RaterDemographics,
 	RaterProgress,
 	Vignette,
 } from "~/types";
@@ -216,6 +217,54 @@ export class Database {
 				"SELECT id FROM evaluations WHERE rater_id = ? AND vignette_id = ? LIMIT 1",
 			)
 			.bind(raterId, vignetteId)
+			.first();
+		return result !== null;
+	}
+
+	// Rater Demographics
+	async saveRaterDemographics(
+		demographics: Omit<RaterDemographics, "id" | "created_at">,
+	): Promise<number> {
+		const result = await this.db
+			.prepare(
+				`INSERT INTO rater_demographics
+        (rater_id, years_of_practice, practice_location, ai_clinical_reasoning_confidence, ai_safety_concern, ai_decision_support_willingness, ai_concerns, phone_number)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+			)
+			.bind(
+				demographics.rater_id,
+				demographics.years_of_practice,
+				demographics.practice_location,
+				demographics.ai_clinical_reasoning_confidence,
+				demographics.ai_safety_concern,
+				demographics.ai_decision_support_willingness,
+				JSON.stringify(demographics.ai_concerns),
+				demographics.phone_number,
+			)
+			.run();
+		return result.meta.last_row_id as number;
+	}
+
+	async getRaterDemographics(
+		raterId: string,
+	): Promise<RaterDemographics | null> {
+		const raw = await this.db
+			.prepare("SELECT * FROM rater_demographics WHERE rater_id = ? LIMIT 1")
+			.bind(raterId)
+			.first<Omit<RaterDemographics, "ai_concerns"> & { ai_concerns: string }>();
+
+		if (!raw) return null;
+
+		return {
+			...raw,
+			ai_concerns: JSON.parse(raw.ai_concerns),
+		};
+	}
+
+	async hasSubmittedDemographics(raterId: string): Promise<boolean> {
+		const result = await this.db
+			.prepare("SELECT id FROM rater_demographics WHERE rater_id = ? LIMIT 1")
+			.bind(raterId)
 			.first();
 		return result !== null;
 	}

@@ -6,8 +6,16 @@ import {
 	getRaterProgress,
 	getVignettesWithOutputs,
 	submitEvaluation,
+	submitRaterDemographics,
 } from "~/server/functions";
-import type { EvaluationFormData, LLMOutput, Vignette } from "~/types";
+import type {
+	AIConcern,
+	DemographicsFormData,
+	EvaluationFormData,
+	LLMOutput,
+	PracticeLocation,
+	Vignette,
+} from "~/types";
 
 export const Route = createFileRoute("/evaluate/survey")({
 	component: SurveyPage,
@@ -40,6 +48,18 @@ function SurveyPage() {
 		comment: "",
 	});
 	const [submitting, setSubmitting] = useState(false);
+	const [showDemographics, setShowDemographics] = useState(false);
+	const [demographicsData, setDemographicsData] =
+		useState<DemographicsFormData>({
+			years_of_practice: 0,
+			practice_location: "",
+			ai_clinical_reasoning_confidence: 0,
+			ai_safety_concern: 0,
+			ai_decision_support_willingness: 0,
+			ai_concerns: [],
+			phone_number: "",
+		});
+	const [demographicsSubmitting, setDemographicsSubmitting] = useState(false);
 
 	const loadData = useCallback(async () => {
 		try {
@@ -139,8 +159,8 @@ function SurveyPage() {
 			if (nextUncompleted >= 0) {
 				setCurrentIndex(nextUncompleted);
 			} else {
-				// All done
-				setCurrentIndex(vignettes.length);
+				// All vignettes done - show demographics form
+				setShowDemographics(true);
 			}
 
 			// Scroll to top of page
@@ -164,8 +184,73 @@ function SurveyPage() {
 		if (currentIndex < vignettes.length - 1) {
 			setCurrentIndex(currentIndex + 1);
 			resetForm();
+		} else if (currentIndex === vignettes.length - 1) {
+			// On last vignette, proceed to demographics
+			setShowDemographics(true);
 		}
 	};
+
+	const handleDemographicsSubmit = async () => {
+		// Validation
+		if (demographicsData.years_of_practice <= 0) {
+			alert("Mohon masukkan lama praktik yang valid");
+			return;
+		}
+		if (!demographicsData.practice_location) {
+			alert("Mohon pilih tempat praktik utama");
+			return;
+		}
+		if (demographicsData.ai_clinical_reasoning_confidence === 0) {
+			alert("Mohon jawab pertanyaan tentang kepercayaan terhadap AI");
+			return;
+		}
+		if (demographicsData.ai_safety_concern === 0) {
+			alert("Mohon jawab pertanyaan tentang kekhawatiran keamanan AI");
+			return;
+		}
+		if (demographicsData.ai_decision_support_willingness === 0) {
+			alert("Mohon jawab pertanyaan tentang kesediaan menggunakan AI");
+			return;
+		}
+
+		setDemographicsSubmitting(true);
+
+		try {
+			await submitRaterDemographics({
+				data: {
+					rater_id: raterId,
+					years_of_practice: demographicsData.years_of_practice,
+					practice_location: demographicsData.practice_location as PracticeLocation,
+					ai_clinical_reasoning_confidence:
+						demographicsData.ai_clinical_reasoning_confidence,
+					ai_safety_concern: demographicsData.ai_safety_concern,
+					ai_decision_support_willingness:
+						demographicsData.ai_decision_support_willingness,
+					ai_concerns: demographicsData.ai_concerns,
+					phone_number: demographicsData.phone_number || null,
+				},
+			});
+
+			// Show final completion
+			setShowDemographics(false);
+			setCurrentIndex(vignettes.length);
+		} catch (error) {
+			alert("Gagal mengirim data demografi. Silakan coba lagi.");
+			console.error(error);
+		} finally {
+			setDemographicsSubmitting(false);
+		}
+	};
+
+	const toggleAIConcern = (concern: AIConcern) => {
+		setDemographicsData((prev) => ({
+			...prev,
+			ai_concerns: prev.ai_concerns.includes(concern)
+				? prev.ai_concerns.filter((c) => c !== concern)
+				: [...prev.ai_concerns, concern],
+		}));
+	};
+
 
 	if (loading) {
 		return (
@@ -188,7 +273,265 @@ function SurveyPage() {
 		);
 	}
 
-	// Completion screen
+	// Demographics form screen
+	if (showDemographics) {
+		return (
+			<div className="min-h-screen bg-gray-50 py-8 px-4">
+				<div className="max-w-4xl mx-auto">
+					<div className="bg-white rounded-lg shadow-md p-6 mb-6">
+						<h1 className="text-3xl font-bold mb-6 text-blue-600">
+							Pertanyaan Tambahan
+						</h1>
+						<p className="text-gray-700 mb-6">
+							Sebelum menyelesaikan survei, mohon jawab beberapa pertanyaan
+							berikut:
+						</p>
+
+						<div className="space-y-6">
+							{/* Question 1: Years of Practice */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									1. Berapa lama Anda telah berpraktik sebagai dokter? (dalam tahun)
+								</label>
+								<input
+									type="number"
+									min="0"
+									value={demographicsData.years_of_practice || ""}
+									onChange={(e) =>
+										setDemographicsData({
+											...demographicsData,
+											years_of_practice: Number.parseInt(e.target.value) || 0,
+										})
+									}
+									className="w-full md:w-1/3 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+									placeholder="Contoh: 5"
+								/>
+							</div>
+
+							{/* Question 2: Practice Location */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									2. Di mana Anda terutama berpraktik?
+								</label>
+								<div className="flex flex-wrap gap-3">
+									{[
+										["hospital", "Rumah Sakit"],
+										["clinic", "Klinik"],
+										["puskesmas", "Puskesmas"],
+										["home", "Praktik Mandiri"],
+									].map(([value, label]) => (
+										<label
+											key={value}
+											className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+										>
+											<input
+												type="radio"
+												name="practice_location"
+												value={value}
+												checked={demographicsData.practice_location === value}
+												onChange={() =>
+													setDemographicsData({
+														...demographicsData,
+														practice_location: value as PracticeLocation,
+													})
+												}
+												className="w-5 h-5"
+											/>
+											<span className="text-base">{label}</span>
+										</label>
+									))}
+								</div>
+							</div>
+
+							{/* Question 3a: AI Clinical Reasoning Confidence */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									3a. Secara umum, saya yakin diagnosis diferensial berbasis AI ini cukup mampu melakukan clinical reasoning.
+								</label>
+								<div className="flex flex-wrap gap-3">
+									{[
+										[1, "Sangat tidak setuju"],
+										[2, "Tidak setuju"],
+										[3, "Ragu-ragu"],
+										[4, "Setuju"],
+										[5, "Sangat setuju"],
+									].map(([score, label]) => (
+										<label
+											key={score}
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
+										>
+											<input
+												type="radio"
+												name="ai_clinical_reasoning"
+												value={score}
+												checked={
+													demographicsData.ai_clinical_reasoning_confidence ===
+													score
+												}
+												onChange={() =>
+													setDemographicsData({
+														...demographicsData,
+														ai_clinical_reasoning_confidence: score as number,
+													})
+												}
+												className="w-5 h-5"
+											/>
+											<span className="text-base">{label}</span>
+										</label>
+									))}
+								</div>
+							</div>
+
+							{/* Question 3b: AI Safety Concern */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									3b. Saya khawatir penggunaan AI dalam diagnosis diferensial dapat membahayakan pasien.
+								</label>
+								<div className="flex flex-wrap gap-3">
+									{[
+										[1, "Sangat tidak setuju"],
+										[2, "Tidak setuju"],
+										[3, "Ragu-ragu"],
+										[4, "Setuju"],
+										[5, "Sangat setuju"],
+									].map(([score, label]) => (
+										<label
+											key={score}
+											className="flex items-center space-x-2 cursor-pointer px-3 py-2 rounded hover:bg-gray-100 transition-colors"
+										>
+											<input
+												type="radio"
+												name="ai_safety"
+												value={score}
+												checked={demographicsData.ai_safety_concern === score}
+												onChange={() =>
+													setDemographicsData({
+														...demographicsData,
+														ai_safety_concern: score as number,
+													})
+												}
+												className="w-5 h-5"
+											/>
+											<span className="text-base">{label}</span>
+										</label>
+									))}
+								</div>
+							</div>
+
+							{/* Question 3c: AI Decision Support Willingness */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									3c. Saya bersedia untuk menggunakan AI untuk decision support system dalam diagnosa klinis saya.
+								</label>
+								<div className="flex flex-wrap gap-3">
+									{[
+										[1, "Tidak mau"],
+										[2, "Ragu-ragu"],
+										[3, "Mau"],
+									].map(([score, label]) => (
+										<label
+											key={score}
+											className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+										>
+											<input
+												type="radio"
+												name="ai_willingness"
+												value={score}
+												checked={
+													demographicsData.ai_decision_support_willingness ===
+													score
+												}
+												onChange={() =>
+													setDemographicsData({
+														...demographicsData,
+														ai_decision_support_willingness: score as number,
+													})
+												}
+												className="w-5 h-5"
+											/>
+											<span className="text-base">{label}</span>
+										</label>
+									))}
+								</div>
+							</div>
+
+							{/* Question 3d: AI Concerns */}
+							<div className="bg-gray-50 p-4 rounded border">
+								<label className="block font-medium mb-3">
+									3d. Apa yang Anda khawatirkan tentang penggunaan AI dalam penegakan diagnosis klinis? (pilih semua yang sesuai)
+								</label>
+								<div className="space-y-2">
+									{[
+										["liability", "Liability (siapa yang bertanggung jawab)"],
+										["risk", "Risiko"],
+										["privacy", "Privasi pasien"],
+										[
+											"clinical_reasoning_inability",
+											"Ketidakmampuan clinical reasoning",
+										],
+										[
+											"transparency_lack",
+											"Kurangnya transparansi clinical reasoning",
+										],
+										["other", "Lain-lain"],
+									].map(([value, label]) => (
+										<label
+											key={value}
+											className="flex items-center space-x-2 cursor-pointer px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+										>
+											<input
+												type="checkbox"
+												checked={demographicsData.ai_concerns.includes(
+													value as AIConcern,
+												)}
+												onChange={() => toggleAIConcern(value as AIConcern)}
+												className="w-5 h-5"
+											/>
+											<span className="text-base">{label}</span>
+										</label>
+									))}
+								</div>
+							</div>
+
+							{/* Optional: Phone Number for Prize Lottery */}
+							<div className="bg-blue-50 p-4 rounded border border-blue-200">
+								<label className="block font-medium mb-3">
+									4. Nomor Telepon (Opsional - untuk undian hadiah)
+								</label>
+								<input
+									type="tel"
+									value={demographicsData.phone_number}
+									onChange={(e) =>
+										setDemographicsData({
+											...demographicsData,
+											phone_number: e.target.value,
+										})
+									}
+									className="w-full md:w-2/3 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+									placeholder="Contoh: 081234567890"
+								/>
+								<p className="text-sm text-gray-600 mt-2">
+									Nomor telepon Anda akan digunakan untuk undian hadiah dan tidak akan dibagikan kepada pihak ketiga.
+								</p>
+							</div>
+						</div>
+
+						<div className="flex justify-end mt-8 pt-6 border-t">
+							<Button
+								onClick={handleDemographicsSubmit}
+								disabled={demographicsSubmitting}
+								className="px-8"
+							>
+								{demographicsSubmitting ? "Menyimpan..." : "Selesai"}
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Final completion screen
 	if (currentIndex >= vignettes.length) {
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -582,11 +925,10 @@ function SurveyPage() {
 							>
 								Sebelumnya
 							</Button>
-							<Button
-								onClick={handleNext}
-								disabled={currentIndex === vignettes.length - 1}
-							>
-								Selanjutnya
+							<Button onClick={handleNext}>
+								{currentIndex === vignettes.length - 1
+									? "Lanjut ke Kuesioner"
+									: "Selanjutnya"}
 							</Button>
 						</div>
 					</div>
